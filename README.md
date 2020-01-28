@@ -14,7 +14,8 @@ Security Services (NSS) on RHEL 8.
 The `certs` directory should be populated with required certificates
 and keys prior to running the above script.  Please refer to the
 [instructions](https://github.com/rlucente-se-jboss/fips-openjdk-rhel/blob/master/certs/README.md)
-on how to do this.
+which creates a root CA, intermediate CA signed by the root, and
+client and server keys and certs signed by the intermediate CA.
 
 Use the script included in this repository to initialize that
 database in a local user home directory.  The script will also
