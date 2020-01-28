@@ -32,13 +32,13 @@ CAs, certificates, and keys.
 ### User-specific NSS configuration
 To tailor `java.security` policy to a specific daemon or local user,
 java system property overrides can be used. The configuration script
-in this project initializes an NSS database that's unique to the
-local user's home directory.  The script also creates a system
-property override file to change settings in the global `java.security`
-policy file to refer to the NSS configuration in the local user
-home directory.  This method enables each local user or daemon
-running java to have their own NSS configuration and database on
-the same host.
+in this project leaves the global `java.security` policy unchanged
+by initializings an NSS database that's unique to the local user's
+home directory.  The script also creates a system property override
+file to change settings in the global `java.security` policy file
+to refer to the NSS configuration in the local user home directory.
+This method enables each local user or daemon running java to have
+their own NSS configuration and database on the same host.
 
     cd
     git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
@@ -62,7 +62,8 @@ Cryptography Architecture/Java Cryptography Extension (JCA/JCE) providers.
 
     cd ~/fips-openjdk-rhel
     javac ListProviders.java
-    java -Djava.security.properties=java.security.properties -Dcom.redhat.fips=true ListProviders | head
+    java -Djava.security.properties=$HOME/java.security.properties \
+        -Dcom.redhat.fips=true ListProviders | head
 
 The first listed provider should be `SunPKCS11-NSS-FIPS` which
 indicates that FIPS is correctly configured for Java.
@@ -70,5 +71,6 @@ indicates that FIPS is correctly configured for Java.
 If you omit the `com.redhat.fips=true` parameter, the default
 non-FIPS JCA/JCE providers are enabled.
 
-    java -Djava.security.properties=java.security.properties ListProviders | head
+    java -Djava.security.properties=$HOME/java.security.properties \
+        ListProviders | head
 
