@@ -8,19 +8,26 @@ Install the following packages onto a minimal RHEL 8 instance.
     sudo yum -y install java-11-openjdk-devel nss-tools git
 
 ## Configure the certificate database
-OpenJDK delegates cryptographic functions to the Mozilla Netscape
-Security Services (NSS) on RHEL 8.
+Configuring OpenJDK to use the SunPKCS11 provider delegates
+cryptographic functions to the Mozilla Netscape Security Services
+(NSS) on RHEL 8.  The NSS libraries are FIPS 140-2 certified, so
+when RHEL 8 is run in FIPS enforcing mode, the NSS libraries are
+limited to the FIPS approved algorithms.
 
 The `certs` directory should be populated with required certificates
 and keys prior to running the above script.  Please refer to the
 [instructions](https://github.com/rlucente-se-jboss/fips-openjdk-rhel/blob/master/certs/README.md)
-which creates a root CA, intermediate CA signed by the root, and
+which creates a root CA, an intermediate CA signed by the root, and
 client and server keys and certs signed by the intermediate CA.
 
-Use the script included in this repository to initialize that
-database in a local user home directory.  The script will also
-modify the global `java.security` policy file to refer to the NSS
-database in the local user home directory.
+The SunPKCS11 provider configuration in the `java.security` policy
+file sets a single NSS database for all java processes on the RHEL
+host.  To tailor that to specific local users or daemon processes
+that have a definedhome directory, the configuration script in this
+project initializes an NSS database that's unique to the local
+user's home directory.  The script will also modify the global
+`java.security` policy file to refer to the NSS database in the
+local user home directory.
 
     cd
     git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
@@ -40,7 +47,7 @@ enabled.
 
 ## Confirm provider configuration
 Use the included java source file to list the configured Java
-Cryptography Architecture (JCA) providers.
+Cryptography Architecture/Java Cryptography Extension (JCA/JCE) providers.
 
     cd ~/fips-openjdk-rhel
     javac ListProviders.java
@@ -48,4 +55,9 @@ Cryptography Architecture (JCA) providers.
 
 The first listed provider should be `SunPKCS11-NSS-FIPS` which
 indicates that FIPS is correctly configured for Java.
+
+If you omit the `com.redhat.fips=true` parameter, the default
+non-FIPS JCA/JCE providers are enabled.
+
+    java ListProviders | head
 
