@@ -27,12 +27,12 @@ that have a defined home directory, the configuration script in
 this project initializes an NSS database that's unique to the local
 user's home directory.  The script will also modify the global
 `java.security` policy file to refer to the NSS configuration in
-the local user home directory.
+the local user home directory.  Each local user or daemon running
+java can have their own NSS configuration and database on the same
+host.
 
-    cd
-    git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
-    cd fips-openjdk-rhel
-    ./config-fips-java.sh
+    cd git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
+    cd fips-openjdk-rhel ./config-fips-java.sh
 
 ## Enable FIPS mode
 Put RHEL 8 into FIPS compliant mode using the following commands:
