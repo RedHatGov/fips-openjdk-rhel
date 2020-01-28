@@ -23,11 +23,11 @@ client and server keys and certs signed by the intermediate CA.
 The SunPKCS11 provider configuration in the `java.security` policy
 file sets a single NSS database for all java processes on the RHEL
 host.  To tailor that to specific local users or daemon processes
-that have a definedhome directory, the configuration script in this
-project initializes an NSS database that's unique to the local
+that have a defined home directory, the configuration script in
+this project initializes an NSS database that's unique to the local
 user's home directory.  The script will also modify the global
-`java.security` policy file to refer to the NSS database in the
-local user home directory.
+`java.security` policy file to refer to the NSS configuration in
+the local user home directory.
 
     cd
     git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
