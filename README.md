@@ -41,6 +41,7 @@ enabled.
 Use the included java source file to list the configured Java
 Cryptography Architecture (JCA) providers.
 
+    cd ~/fips-openjdk-rhel
     javac ListProviders.java
     java -Dcom.redhat.fips=true ListProviders
 
