@@ -43,5 +43,8 @@ Cryptography Architecture (JCA) providers.
 
     cd ~/fips-openjdk-rhel
     javac ListProviders.java
-    java -Dcom.redhat.fips=true ListProviders
+    java -Dcom.redhat.fips=true ListProviders | head
+
+The first listed provider should be `SunPKCS11-NSS-FIPS` which
+indicates that FIPS is correctly configured for Java.
 
