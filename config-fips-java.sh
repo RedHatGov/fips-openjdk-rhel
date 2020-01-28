@@ -30,9 +30,6 @@ pk12util -i certs/server.p12 -d $NSSDB -k $PASSFILE -w $PASSFILE
 certutil -L -d $NSSDB -h all
 certutil -K -d $NSSDB -h all -f $PASSFILE
 
-# check that fips mode is enabled
-modutil -chkfips true -dbdir $NSSDB
-
 # clean up the password file
 rm -f $PASSFILE
 
@@ -41,12 +38,11 @@ JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 | grep java.home | awk 
 SEC_CONF=$JAVA_HOME/conf/security
 
 # modify java.security policy to point to the local user directory
-echo "Provide your password to execute sudo"
+echo "Provide your password to execute sudo, if prompted."
 sudo sed -i 's/\(^fips.provider.1=SunPKCS11 \)..*/\1\${user.home}\/nss.fips.cfg/g' $SEC_CONF/java.security
 cp $SEC_CONF/nss.fips.cfg $HOME
 
 # point local user NSS config to the user's NSS database
 ESCHOME=$(echo $HOME | sed 's/\//\\\//g')
-echo "$ESCHOME"
 sed -i 's/\/etc\/pki\/nssdb/'$ESCHOME'\/nssdb/g' $HOME/nss.fips.cfg
 
