@@ -31,8 +31,10 @@ the local user home directory.  Each local user or daemon running
 java can have their own NSS configuration and database on the same
 host.
 
-    cd git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
-    cd fips-openjdk-rhel ./config-fips-java.sh
+    cd
+    git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
+    cd fips-openjdk-rhel
+    ./config-fips-java.sh
 
 ## Enable FIPS mode
 Put RHEL 8 into FIPS compliant mode using the following commands:
