@@ -20,16 +20,25 @@ and keys prior to running the above script.  Please refer to the
 which creates a root CA, an intermediate CA signed by the root, and
 client and server keys and certs signed by the intermediate CA.
 
+### Global NSS configuration
 The SunPKCS11 provider configuration in the `java.security` policy
 file sets a single NSS database for all java processes on the RHEL
-host.  To tailor that to specific local users or daemon processes
-that have a defined home directory, the configuration script in
-this project initializes an NSS database that's unique to the local
-user's home directory.  The script will also modify the global
-`java.security` policy file to refer to the NSS configuration in
-the local user home directory.  Each local user or daemon running
-java can have their own NSS configuration and database on the same
-host.
+host.  When the java command line option `com.redhat.fips=true` is
+used, the NSS FIPS configuration within the global `java.security`
+file is in effect. An administrator needs to make sure that the NSS
+database at `/etc/pki/nssdb` is properly populated with required
+CAs, certificates, and keys.
+
+### User-specific NSS configuration
+To tailor `java.security` policy to a specific daemon or local user,
+java system property overrides can be used. The configuration script
+in this project initializes an NSS database that's unique to the
+local user's home directory.  The script also creates a system
+property override file to change settings in the global `java.security`
+policy file to refer to the NSS configuration in the local user
+home directory.  This method enables each local user or daemon
+running java to have their own NSS configuration and database on
+the same host.
 
     cd
     git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
@@ -53,7 +62,7 @@ Cryptography Architecture/Java Cryptography Extension (JCA/JCE) providers.
 
     cd ~/fips-openjdk-rhel
     javac ListProviders.java
-    java -Dcom.redhat.fips=true ListProviders | head
+    java -Djava.security.properties=java.security.properties -Dcom.redhat.fips=true ListProviders | head
 
 The first listed provider should be `SunPKCS11-NSS-FIPS` which
 indicates that FIPS is correctly configured for Java.
@@ -61,5 +70,5 @@ indicates that FIPS is correctly configured for Java.
 If you omit the `com.redhat.fips=true` parameter, the default
 non-FIPS JCA/JCE providers are enabled.
 
-    java ListProviders | head
+    java -Djava.security.properties=java.security.properties ListProviders | head
 

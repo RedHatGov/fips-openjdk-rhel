@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+# determine JRE home directory from the java properties
+JRE_HOME=$(java -XshowSettings:properties -version |& grep java.home | \
+    awk '{print $NF}')
+
+# abort if java system property overrides are not enabled
+SEC_CONF=$(find -L $JRE_HOME -type f -name java.security)
+if [[ -z "$(grep 'security.useSystemPropertiesFile=true' $SEC_CONF)" ]]
+then
+    echo
+    echo "Make sure that OpenJDK is configured to enable system property overrides."
+    echo "Edit $JRE_HOME/conf/security/java.security"
+    echo "and set 'security.useSystemPropertiesFile=true'."
+    echo
+    exit 1
+fi
+
 WORKDIR=$(pushd $(dirname $0) &> /dev/null && pwd && popd &> /dev/null)
 NSSDB=$HOME/nssdb
 
@@ -33,16 +49,20 @@ certutil -K -d $NSSDB -h all -f $PASSFILE
 # clean up the password file
 rm -f $PASSFILE
 
-# determine directory for the java.security policy file
-JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 | grep java.home | awk '{print $NF}')
-SEC_CONF=$JAVA_HOME/conf/security
-
-# modify java.security policy to point to the local user directory
-echo "Provide your password to execute sudo, if prompted."
-sudo sed -i 's/\(^fips.provider.1=SunPKCS11 \)..*/\1\${user.home}\/nss.fips.cfg/g' $SEC_CONF/java.security
-cp $SEC_CONF/nss.fips.cfg $HOME
+# create security property override file for the local user
+cat > $HOME/java.security.properties <<END1
+#
+# This file overrides the values in the java.security policy file
+# which can be found at:
+#
+#    JRE_HOME=$JRE_HOME
+#    \$JRE_HOME/conf/security/java.security
+#
+fips.provider.1=SunPKCS11 \${user.home}/nss.fips.cfg
+END1
 
 # point local user NSS config to the user's NSS database
+cp $JRE_HOME/conf/security/nss.fips.cfg $HOME
 ESCHOME=$(echo $HOME | sed 's/\//\\\//g')
 sed -i 's/\/etc\/pki\/nssdb/'$ESCHOME'\/nssdb/g' $HOME/nss.fips.cfg
 
