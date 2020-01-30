@@ -10,9 +10,10 @@ Install the following packages onto a minimal RHEL 8 instance.
 ## Configure the certificate database
 Configuring OpenJDK to use the SunPKCS11 provider delegates
 cryptographic functions to the Mozilla Netscape Security Services
-(NSS) on RHEL 8.  The NSS libraries are FIPS 140-2 certified, so
-when RHEL 8 is run in FIPS enforcing mode, the NSS libraries are
-limited to the FIPS approved algorithms.
+(NSS) on RHEL 8.  The NSS libraries are FIPS 140-2 certified or in
+process of being certified by NIST, so when RHEL 8 is run in FIPS
+enforcing mode, the NSS libraries are limited to the FIPS approved
+algorithms.
 
 The `certs` directory should be populated with required certificates
 and keys prior to running the above script.  Please refer to the
@@ -23,8 +24,8 @@ client and server keys and certs signed by the intermediate CA.
 ### Global NSS configuration
 The SunPKCS11 provider configuration in the `java.security` policy
 file sets a single NSS database for all java processes on the RHEL
-host.  When the java command line option `com.redhat.fips=true` is
-used, the NSS FIPS configuration within the global `java.security`
+8 host.  When the java command line option `com.redhat.fips=true`
+is used, the NSS FIPS configuration within the global `java.security`
 file is in effect. An administrator needs to make sure that the NSS
 database at `/etc/pki/nssdb` is properly populated with required
 CAs, certificates, and keys.
