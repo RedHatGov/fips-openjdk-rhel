@@ -34,7 +34,7 @@ CAs, certificates, and keys.
 To tailor `java.security` policy to a specific daemon or local user,
 java system property overrides can be used. The configuration script
 in this project leaves the global `java.security` policy unchanged
-by initializings an NSS database that's unique to the local user's
+by initializing an NSS database that's unique to the local user's
 home directory.  The script also creates a system property override
 file to change settings in the global `java.security` policy file
 to refer to the NSS configuration in the local user home directory.
