@@ -4,12 +4,12 @@
 JRE_HOME=$(java -XshowSettings:properties -version |& grep java.home | \
     awk '{print $NF}')
 
-# abort if java system property overrides are not enabled
+# abort if java system property overrides are disabled
 SEC_CONF=$(find -L $JRE_HOME -type f -name java.security)
 if [[ -z "$(grep 'security.useSystemPropertiesFile=true' $SEC_CONF)" ]]
 then
     echo
-    echo "Make sure that OpenJDK is configured to enable system property overrides."
+    echo "Make sure that OpenJDK allows system property overrides."
     echo "Edit $JRE_HOME/conf/security/java.security"
     echo "and set 'security.useSystemPropertiesFile=true'."
     echo
