@@ -8,6 +8,9 @@ Install the following packages onto a minimal RHEL 8 instance.
 
     sudo yum -y install java-11-openjdk-devel nss-tools git
 
+Alternatively, you can install the `java-1.8.0-openjdk-devel`
+package.
+
 ## Configure the certificate database
 Configuring OpenJDK to use the SunPKCS11 provider delegates
 cryptographic functions to the Mozilla Netscape Security Services

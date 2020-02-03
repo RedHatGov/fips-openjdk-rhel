@@ -6,12 +6,12 @@ JRE_HOME=$(java -XshowSettings:properties -version |& grep java.home | \
 
 # abort if java system property overrides are disabled
 SEC_CONF=$(find -L $JRE_HOME -type f -name java.security)
-if [[ -z "$(grep 'security.useSystemPropertiesFile=true' $SEC_CONF)" ]]
+if [[ -z "$(grep 'security.overridePropertiesFile=true' $SEC_CONF)" ]]
 then
     echo
     echo "Make sure that OpenJDK allows system property overrides."
-    echo "Edit $JRE_HOME/conf/security/java.security"
-    echo "and set 'security.useSystemPropertiesFile=true'."
+    echo "Edit $SEC_CONF"
+    echo "and set 'security.overridePropertiesFile=true'."
     echo
     exit 1
 fi
@@ -49,20 +49,22 @@ certutil -K -d $NSSDB -h all -f $PASSFILE
 # clean up the password file
 rm -f $PASSFILE
 
+# get the fips.provider.1 configuration from the java.security file
+FIPS_PROVIDER=$(grep 'fips.provider.1=' $SEC_CONF | sed 's/^\(..*SunPKCS11\)..*/\1 \${user.home}\/nss.fips.cfg/g')
+
 # create security property override file for the local user
 cat > $HOME/java.security.properties <<END1
 #
 # This file overrides the values in the java.security policy file
 # which can be found at:
 #
-#    JRE_HOME=$JRE_HOME
-#    \$JRE_HOME/conf/security/java.security
+#    $SEC_CONF
 #
-fips.provider.1=SunPKCS11 \${user.home}/nss.fips.cfg
+$FIPS_PROVIDER
 END1
 
 # point local user NSS config to the user's NSS database
-cp $JRE_HOME/conf/security/nss.fips.cfg $HOME
+cp $(dirname $SEC_CONF)/nss.fips.cfg $HOME
 ESCHOME=$(echo $HOME | sed 's/\//\\\//g')
 sed -i 's/\/etc\/pki\/nssdb/'$ESCHOME'\/nssdb/g' $HOME/nss.fips.cfg
 
