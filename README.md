@@ -1,6 +1,7 @@
 # fips-openjdk-rhel
 This repository details how to configure OpenJDK on RHEL 8 using
-FIPS 140-2 validated cryptographic libraries.
+FIPS 140-2 validated cryptographic modules or FIPS 140-2 module
+implementations currently under test.
 
 ## Install needed packages
 Install the following packages onto a minimal RHEL 8 instance.
