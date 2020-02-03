@@ -35,11 +35,17 @@ CAs, certificates, and keys.
 Java processes can specify overrides to the global `java.security`
 policy when the `security.useSystemPropertiesFile` property in the
 global `java.security` policy file is set to `true`.  The java
-command line option `-Djava.security.properties=your-override-file`
+command line option
+
+    -Djava.security.properties=your-override-file
+
 will override specific global policy settings with your specific
 properties.  If you use the same command line option with two equal
-signs (e.g.  `-Djava.security.properties==your-override-file`) then
-your policy entirely replaces the global `java.security` policy.
+signs
+
+    -Djava.security.properties==your-override-file
+
+then your policy entirely replaces the global `java.security` policy.
 "With great power comes great responsibility" so be careful.
 
 The configuration script in this project leaves the global
@@ -47,7 +53,7 @@ The configuration script in this project leaves the global
 that's unique to the local user's home directory.  The script also
 creates a system property override file to change settings in the
 global `java.security` policy file to refer to the NSS configuration
-in the local user home directory.
+in the local user's home directory.
 
     cd
     git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
