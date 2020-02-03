@@ -52,7 +52,7 @@ then your policy entirely replaces the global `java.security` policy.
 The configuration script in this project leaves the global
 `java.security` policy unchanged by initializing an NSS database
 that's unique to the local user's home directory.  The script also
-creates a system property override file to change one property in
+creates a system property override file to change one property from
 the global `java.security` policy file to refer to the NSS configuration
 in the local user's home directory.
 
