@@ -1,6 +1,6 @@
 # fips-openjdk-rhel
 This repository details how to configure OpenJDK on RHEL 8 using
-FIPS 140-2 certified cryptographic libraries.
+FIPS 140-2 validated cryptographic libraries.
 
 ## Install needed packages
 Install the following packages onto a minimal RHEL 8 instance.
@@ -10,16 +10,17 @@ Install the following packages onto a minimal RHEL 8 instance.
 ## Configure the certificate database
 Configuring OpenJDK to use the SunPKCS11 provider delegates
 cryptographic functions to the Mozilla Netscape Security Services
-(NSS) on RHEL 8.  The NSS libraries are FIPS 140-2 certified or in
-process of being certified by NIST, so when RHEL 8 is run in FIPS
-enforcing mode, the NSS libraries are limited to the FIPS approved
-algorithms.
+(NSS) on RHEL 8.  The NSS libraries are currently FIPS 140-2 validated
+for RHEL 7 and earlier and they are in the process of being validated
+by NIST for RHEL 8.  When RHEL 8 is run in FIPS enforcing mode, the
+NSS libraries are limited to the approved FIPS algorithms.
 
 The `certs` directory should be populated with required certificates
-and keys prior to running the above script.  Please refer to the
+and keys prior to running the above script.  Please refer to these
 [instructions](https://github.com/rlucente-se-jboss/fips-openjdk-rhel/blob/master/certs/README.md)
-which creates a root CA, an intermediate CA signed by the root, and
-client and server keys and certs signed by the intermediate CA.
+which create test certificates consisting of a root certificate
+authority (CA), an intermediate CA signed by the root, and client
+and server keys and certs signed by the intermediate CA.
 
 ### Global NSS configuration
 The SunPKCS11 provider configuration in the `java.security` policy
@@ -31,15 +32,22 @@ database at `/etc/pki/nssdb` is properly populated with required
 CAs, certificates, and keys.
 
 ### User-specific NSS configuration
-To tailor `java.security` policy to a specific daemon or local user,
-java system property overrides can be used. The configuration script
-in this project leaves the global `java.security` policy unchanged
-by initializing an NSS database that's unique to the local user's
-home directory.  The script also creates a system property override
-file to change settings in the global `java.security` policy file
-to refer to the NSS configuration in the local user home directory.
-This method enables each local user or daemon running java to have
-their own NSS configuration and database on the same host.
+Java processes can specify overrides to the global `java.security`
+policy when the `security.useSystemPropertiesFile` property in the
+global `java.security` policy file is set to `true`.  The java
+command line option `-Djava.security.properties=your-override-file`
+will override specific global policy settings with your specific
+properties.  If you use the same command line option with two equal
+signs (e.g.  `-Djava.security.properties==your-override-file`) then
+your policy entirely replaces the global `java.security` policy.
+"With great power comes great responsibility" so be careful.
+
+The configuration script in this project leaves the global
+`java.security` policy unchanged by initializing an NSS database
+that's unique to the local user's home directory.  The script also
+creates a system property override file to change settings in the
+global `java.security` policy file to refer to the NSS configuration
+in the local user home directory.
 
     cd
     git clone https://github.com/rlucente-se-jboss/fips-openjdk-rhel.git
@@ -47,7 +55,7 @@ their own NSS configuration and database on the same host.
     ./config-fips-java.sh
 
 ## Enable FIPS mode
-Put RHEL 8 into FIPS compliant mode using the following commands:
+Put RHEL 8 into FIPS enforcing mode using the following commands:
 
     sudo fips-mode-setup --enable
     sudo reboot
