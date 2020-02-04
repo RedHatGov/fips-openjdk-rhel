@@ -49,7 +49,7 @@ certutil -K -d $NSSDB -h all -f $PASSFILE
 # clean up the password file
 rm -f $PASSFILE
 
-# get the fips.provider.1 configuration from the java.security file
+# modify the fips.provider.1 configuration from the java.security file
 FIPS_PROVIDER=$(grep 'fips.provider.1=' $SEC_CONF | sed 's/^\(..*SunPKCS11\)..*/\1 \${user.home}\/nss.fips.cfg/g')
 
 # create security property override file for the local user
@@ -68,3 +68,7 @@ cp $(dirname $SEC_CONF)/nss.fips.cfg $HOME
 ESCHOME=$(echo $HOME | sed 's/\//\\\//g')
 sed -i 's/\/etc\/pki\/nssdb/'$ESCHOME'\/nssdb/g' $HOME/nss.fips.cfg
 
+echo
+echo "$HOME/nss.fips.cfg and $HOME/nssdb contain the"
+echo "NSS FIPS configuration for Java and the NSS database, respectively."
+echo
