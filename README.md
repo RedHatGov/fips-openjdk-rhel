@@ -40,8 +40,7 @@ CAs, certificates, and keys.
 ### User-specific NSS configuration
 Java processes can specify overrides to the global `java.security`
 policy when the `security.overridePropertiesFile=true` property in the
-global `java.security` policy file is set to `true`.  The java
-command line option
+global policy file is set to `true`.  The java command line option
 
     -Djava.security.properties=your-override-file
 
