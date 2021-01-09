@@ -94,3 +94,17 @@ non-FIPS JCA/JCE providers are enabled.
     java -Djava.security.properties=$HOME/java.security.properties \
         ListProviders | head
 
+## List the keys in the NSS database
+The overrides in the `java.security.properties` file can also be
+used by `keytool` to dump the certificates in the NSS database.
+Simply type the following:
+
+    keytool -J-Djava.security.properties=$HOME/java.security.properties \
+        -keystore NONE -storetype PKCS11 -storepass 'admin1jboss!' \
+        -list -v
+
+The password `admin1jboss!` matches the password that was used to
+initialize the NSS database in the `config-fips-java.sh` script.
+If you modified that password, then change the above command
+accordingly.
+
