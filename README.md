@@ -1,9 +1,11 @@
 # fips-openjdk-rhel
 This repository details how to configure OpenJDK on RHEL 8 to use
 FIPS 140-2 validated cryptographic modules or FIPS 140-2 modules
-in process of being validated.  RHEL 8 introduces a new java command
-line parameter `com.redhat.fips=true` and `fips.provider` settings
-that greatly simplify configuring for FIPS.
+in process of being validated.  RHEL 8 aligns OpenJDK behavior with
+the system-wide cryptographic policy for FIPS mode. Additonally,
+RHEL 8 introduces a new java command line parameter
+`com.redhat.fips=true|false` and `fips.provider` settings that
+greatly simplify configuring for FIPS.
 
 ## Install needed packages
 Install the following packages onto a minimal RHEL 8 instance.
@@ -17,9 +19,10 @@ package.
 Configuring OpenJDK to use the SunPKCS11 provider delegates
 cryptographic functions to the Mozilla Netscape Security Services
 (NSS) on RHEL 8.  The NSS libraries are currently FIPS 140-2 validated
-for RHEL 7 and earlier and they are in the process of being validated
-by NIST for RHEL 8.  When RHEL 8 is run in FIPS enforcing mode, the
-NSS libraries are limited to the approved FIPS algorithms.
+for RHEL 7 and earlier and they are validated or in the final steps
+of being validated by NIST for RHEL 8.  When RHEL 8 is run in FIPS
+enforcing mode, the NSS libraries are limited to the approved FIPS
+algorithms.
 
 The `certs` directory should be populated with required certificates
 and keys prior to running the above script.  Please refer to these
@@ -71,8 +74,9 @@ Put RHEL 8 into FIPS enforcing mode using the following commands:
     sudo fips-mode-setup --enable
     sudo reboot
 
-After the system has rebooted, check that FIPS mode is correctly
-enabled.
+This will also cause OpenJDK by default to use only FIPS approved
+algorithms.  After the system has rebooted, check that FIPS mode
+is correctly enabled.
 
     sudo fips-mode-setup --check
 
@@ -83,16 +87,18 @@ Cryptography Architecture/Java Cryptography Extension (JCA/JCE) providers.
     cd ~/fips-openjdk-rhel
     javac ListProviders.java
     java -Djava.security.properties=$HOME/java.security.properties \
-        -Dcom.redhat.fips=true ListProviders | head
+        ListProviders | head
 
 The first listed provider should be `SunPKCS11-NSS-FIPS` which
-indicates that FIPS is correctly configured for Java.
+indicates that FIPS is correctly configured for Java. The optional
+command line parameter, `com.redhat.fips` defaults to `true` when
+the system is in FIPS mode.
 
-If you omit the `com.redhat.fips=true` parameter, the default
-non-FIPS JCA/JCE providers are enabled.
+When in FIPS mode, setting the `com.redhat.fips=false` parameter
+enables the default non-FIPS JCA/JCE providers.
 
     java -Djava.security.properties=$HOME/java.security.properties \
-        ListProviders | head
+        -Dcom.redhat.fips=false ListProviders | head
 
 ## List the keys in the NSS database
 The overrides in the `java.security.properties` file can also be
@@ -103,8 +109,9 @@ Simply type the following:
         -keystore NONE -storetype PKCS11 -storepass 'admin1jboss!' \
         -list -v
 
-The password `admin1jboss!` matches the password that was used to
-initialize the NSS database in the `config-fips-java.sh` script.
-If you modified that password, then change the above command
-accordingly.
+Since the system is in FIPS mode, `com.redhat.fips` defaults to
+`true` so it can be omitted from the `keytool` command.  The password
+`admin1jboss!` matches the password that was used to initialize the
+NSS database in the `config-fips-java.sh` script.  If you modified
+that password, then change the above command accordingly.
 
