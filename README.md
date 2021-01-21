@@ -1,11 +1,14 @@
 # fips-openjdk-rhel
 This repository details how to configure OpenJDK on RHEL 8 to use
 FIPS 140-2 validated cryptographic modules or FIPS 140-2 modules
-in process of being validated.  RHEL 8 aligns OpenJDK behavior with
-the system-wide cryptographic policy for FIPS mode. Additonally,
-RHEL 8 introduces a new java command line parameter
-`com.redhat.fips=true|false` and `fips.provider` settings that
-greatly simplify configuring for FIPS.
+in process of being validated. OpenJDK on RHEL 8 introduces a new
+command line parameter and a new property to control how OpenJDK
+adheres to the system-wide cryptographic policies. The
+`security.useSystemPropertiesFiles` in the
+`$JAVA_HOME/lib/security/java.security` file determines if OpenJDK
+follows the system-wide cryptographic policies and the new java
+command line parameter `com.redhat.fips` enable simplified configuration
+of a FIPS compliant JCA/JCE security provider.
 
 ## Install needed packages
 Install the following packages onto a minimal RHEL 8 instance.
@@ -19,10 +22,10 @@ package.
 Configuring OpenJDK to use the SunPKCS11 provider delegates
 cryptographic functions to the Mozilla Netscape Security Services
 (NSS) on RHEL 8.  The NSS libraries are currently FIPS 140-2 validated
-for RHEL 7 and earlier and they are validated or in the final steps
-of being validated by NIST for RHEL 8.  When RHEL 8 is run in FIPS
-enforcing mode, the NSS libraries are limited to the approved FIPS
-algorithms.
+for RHEL 7 and earlier and they are either validated or in the final
+steps of being validated by NIST for RHEL 8.  When RHEL 8 is run
+in FIPS enforcing mode, the NSS libraries are limited to the approved
+FIPS algorithms.
 
 The `certs` directory should be populated with required certificates
 and keys prior to running the above script.  Please refer to these
@@ -34,11 +37,12 @@ and server keys and certs signed by the intermediate CA.
 ### Global NSS configuration
 The SunPKCS11 provider configuration in the `java.security` policy
 file sets a single NSS database for all java processes on the RHEL
-8 host.  When the java command line option `com.redhat.fips=true`
-is used, the NSS FIPS configuration within the global `java.security`
-file is in effect. An administrator needs to make sure that the NSS
-database at `/etc/pki/nssdb` is properly populated with required
-CAs, certificates, and keys.
+8 host.  When the `security.useSystemPropertiesFile=true`, the java
+command line option `com.redhat.fips=true` ensures that the NSS
+FIPS configuration within the global `java.security` file is in
+effect. An administrator needs to make sure that the NSS database
+at `/etc/pki/nssdb` is properly populated with required CAs,
+certificates, and keys.
 
 ### User-specific NSS configuration
 Java processes can specify overrides to the global `java.security`
@@ -92,13 +96,20 @@ Cryptography Architecture/Java Cryptography Extension (JCA/JCE) providers.
 The first listed provider should be `SunPKCS11-NSS-FIPS` which
 indicates that FIPS is correctly configured for Java. The optional
 command line parameter, `com.redhat.fips` defaults to `true` when
-the system is in FIPS mode.
+the system is in FIPS mode and the `security.useSystemPropertiesFile=true`
+in the `java.security` policy file..
 
 When in FIPS mode, setting the `com.redhat.fips=false` parameter
 enables the default non-FIPS JCA/JCE providers.
 
     java -Djava.security.properties=$HOME/java.security.properties \
         -Dcom.redhat.fips=false ListProviders | head
+
+The above commands assume that the `security.useSystemPropertiesFile=true`
+in the `java.security` policy file. If you change that value to
+`false` in either the global policy file or via a command-line
+override then the `com.redhat.fips` value is ignored and OpenJDK
+does not follow the system-wide cryptographic policy.
 
 ## List the keys in the NSS database
 The overrides in the `java.security.properties` file can also be
