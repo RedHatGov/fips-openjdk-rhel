@@ -7,7 +7,7 @@ adheres to the system-wide cryptographic policies. The
 `security.useSystemPropertiesFiles` in the
 `$JAVA_HOME/lib/security/java.security` file determines if OpenJDK
 follows the system-wide cryptographic policies and the new java
-command line parameter `com.redhat.fips` enable simplified configuration
+command line parameter `com.redhat.fips` enables simplified configuration
 of a FIPS compliant JCA/JCE security provider.
 
 ## Install needed packages
@@ -46,7 +46,7 @@ certificates, and keys.
 
 ### User-specific NSS configuration
 Java processes can specify overrides to the global `java.security`
-policy when the `security.overridePropertiesFile=true` property in the
+policy when the `security.overridePropertiesFile` property in the
 global policy file is set to `true`.  The java command line option
 
     -Djava.security.properties=your-override-file
