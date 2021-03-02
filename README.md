@@ -4,11 +4,11 @@ FIPS 140-2 validated cryptographic modules or FIPS 140-2 modules
 in process of being validated. OpenJDK on RHEL 8 introduces a new
 command line parameter and a new property to control how OpenJDK
 adheres to the system-wide cryptographic policies. The
-`security.useSystemPropertiesFiles` in the
+`security.useSystemPropertiesFile` in the
 `$JAVA_HOME/lib/security/java.security` file determines if OpenJDK
 follows the system-wide cryptographic policies and the new java
 command line parameter `com.redhat.fips` enables simplified configuration
-of a FIPS compliant JCA/JCE security provider.
+of FIPS compliant JCA/JCE security providers.
 
 ## Install needed packages
 Install the following packages onto a minimal RHEL 8 instance.
@@ -47,13 +47,17 @@ certificates, and keys.
 ### User-specific NSS configuration
 Java processes can specify overrides to the global `java.security`
 policy when the `security.overridePropertiesFile` property in the
-global policy file is set to `true`.  The java command line option
+global policy file is set to `true`. This change enables each
+individual java process on a host to tailor their own java.security
+policy. Likewise, it simplifies patching and updates if no changes
+are made to the global `java.security` policy file.
+
+The java command line option
 
     -Djava.security.properties=your-override-file
 
-will override specific global policy settings with your specific
-properties.  If you use the same command line option with two equal
-signs
+will override global policy settings with your specific properties.
+If you use the same command line option with two equal signs
 
     -Djava.security.properties==your-override-file
 
